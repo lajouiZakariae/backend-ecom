@@ -57,6 +57,7 @@ class CategoryService
     public function deleteCatgoryById(int $categoryId, int $userId): void
     {
             $affectedRowsCount = Category::destroy($categoryId);
+            $affectedRowsCount = Category::where('user_id', $userId)->destroy($categoryId);
 
             if ($affectedRowsCount === 0) {
                 throw new ResourceNotFoundException(__("Category Not Found"));
@@ -66,6 +67,7 @@ class CategoryService
     public function deleteMultipleCategories(array $categoryIds, int $userId): void
     {
             $affectedRowsCount = Category::destroy($categoryIds);
+            $affectedRowsCount = Category::where('user_id', $userId)->destroy($categoryIds);
 
             if ($affectedRowsCount === 0) {
                 throw new ResourceNotFoundException(__("Category Not Found"));
