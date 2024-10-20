@@ -58,15 +58,10 @@ class CategoryController
     {
         Gate::authorize('update', Category::class);
 
-        request()->merge(['slug' => str(request()->input('name'))->slug()]);
-
-        $validatedCategoryPayload = request()->validate(
-            [
-                'name' => ['required', 'min:1', 'max:255'],
-                'slug' => ['min:1', 'max:255', 'unique:categories,slug'],
-                'description' => ['nullable', 'min:1', 'max:500'],
-            ]
-        );
+        $validatedCategoryPayload = request()->validate([
+            'name' => ['required', 'min:1', 'max:255'],
+            'description' => ['nullable', 'min:1', 'max:500'],
+        ]);
 
         return CategoryResource::make($this->categoryService->updateCategory($categoryId, $validatedCategoryPayload));
     }
