@@ -57,4 +57,9 @@ class Category extends Model implements HasMedia
     {
         return $this->media()->where('collection_name', 'image');
     }
+
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
+    }
 }
