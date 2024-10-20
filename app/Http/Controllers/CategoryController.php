@@ -38,7 +38,6 @@ class CategoryController
         $validatedCategoryPayload = request()->validate([
             'image' => ['required', 'image', 'max:2048'],
             'name' => ['required', 'min:1', 'max:255'],
-            'description' => ['nullable', 'min:1', 'max:500'],
         ]);
 
         $createdCategory = $this->categoryService->createCategory([
@@ -59,8 +58,8 @@ class CategoryController
         Gate::authorize('update', Category::class);
 
         $validatedCategoryPayload = request()->validate([
+            'image' => ['nullable', 'image', 'max:2048'],
             'name' => ['required', 'min:1', 'max:255'],
-            'description' => ['nullable', 'min:1', 'max:500'],
         ]);
 
         return CategoryResource::make($this->categoryService->updateCategory($categoryId, $validatedCategoryPayload));
