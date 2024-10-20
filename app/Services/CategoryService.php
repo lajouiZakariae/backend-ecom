@@ -56,21 +56,59 @@ class CategoryService
 
     public function deleteCatgoryById(int $categoryId, int $userId): void
     {
-            $affectedRowsCount = Category::destroy($categoryId);
+        $defaultCategory = Category::where('user_id', $userId)
+            ->where('is_default', true)
+            ->first();
+
+        if ($defaultCategory === null) {
+            throw new BadRequestHttpException("Default Category Not Found");
+        }
+
+        if ($categoryId === $defaultCategory->id) {
+            throw new BadRequestHttpException("Category cannot be deleted");
+        }
+
+        $defaultCategoryId = $defaultCategory->id;
+
+        DB::transaction(function () use ($defaultCategoryId, $categoryId, $userId): void {
+            Product::where('user_id', $userId)
+                ->where('category_id', $categoryId)
+                ->update(['category_id' => $defaultCategoryId]);
+
             $affectedRowsCount = Category::where('user_id', $userId)->destroy($categoryId);
 
             if ($affectedRowsCount === 0) {
                 throw new ResourceNotFoundException(__("Category Not Found"));
             }
+        });
     }
 
     public function deleteMultipleCategories(array $categoryIds, int $userId): void
     {
-            $affectedRowsCount = Category::destroy($categoryIds);
+        $defaultCategory = Category::where('user_id', $userId)
+            ->where('is_default', true)
+            ->first();
+
+        if ($defaultCategory === null) {
+            throw new BadRequestHttpException("Default Category Not Found");
+        }
+
+        if (in_array($defaultCategory->id, $categoryIds)) {
+            throw new BadRequestHttpException("Category cannot be deleted");
+        }
+
+        DB::transaction(function () use ($defaultCategory, $categoryIds, $userId): void {
+            $defaultCategoryId = $defaultCategory->id;
+
+            Product::where('user_id', $userId)
+                ->whereIn('category_id', $categoryIds)
+                ->update(['category_id' => $defaultCategoryId]);
+
             $affectedRowsCount = Category::where('user_id', $userId)->destroy($categoryIds);
 
             if ($affectedRowsCount === 0) {
                 throw new ResourceNotFoundException(__("Category Not Found"));
             }
+        });
     }
 }
