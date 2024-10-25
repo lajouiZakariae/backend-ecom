@@ -41,5 +41,7 @@ class DatabaseSeeder extends Seeder
                 ]
             );
         }
+
+        $user->wishlistedProducts()->attach($products[0]->id);
     }
 }

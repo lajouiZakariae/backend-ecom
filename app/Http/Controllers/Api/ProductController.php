@@ -9,6 +9,8 @@ use App\Http\Resources\ProductResource;
 use App\Models\Cart;
 use App\Models\Product;
 use DB;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
@@ -40,6 +42,12 @@ class ProductController
                     ->whereColumn('cart_items.product_id', 'products.id')
                     ->groupBy('cart_items.product_id');
             }, 'cart_quantity')
+            ->selectSub(function ($query): void {
+                $query->from('product_user')
+                    ->whereColumn('product_id', 'products.id')
+                    ->select(DB::raw('COUNT(product_user.product_id)'))
+                    ->where('user_id', Auth::id());
+            }, 'wishlisted_by_authenticated_user')
             ->tap(new ProductQueryFilters(
                 $request->priceFrom,
                 $request->priceTo,
@@ -77,8 +85,15 @@ class ProductController
                     ->join('carts', 'cart_items.cart_id', '=', 'carts.id')
                     ->where('carts.user_id', Auth::id())
                     ->select(DB::raw('CAST(SUM(cart_items.quantity) AS SIGNED)'))
-                    ->whereColumn('cart_items.product_id', 'products.id');
+                    ->whereColumn('cart_items.product_id', 'products.id')
+                    ->groupBy('cart_items.product_id');
             }, 'cart_quantity')
+            ->selectSub(function ($query): void {
+                $query->from('product_user')
+                    ->whereColumn('product_id', 'products.id')
+                    ->select(DB::raw('COUNT(product_user.product_id)'))
+                    ->where('user_id', Auth::id());
+            }, 'wishlisted_by_authenticated_user')
             ->where('products.id', $productId)
             ->with('category')
             ->first();
