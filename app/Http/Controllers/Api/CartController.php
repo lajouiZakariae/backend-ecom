@@ -14,6 +14,7 @@ use Spatie\RouteAttributes\Attributes\Middleware;
 use Spatie\RouteAttributes\Attributes\Patch;
 use Spatie\RouteAttributes\Attributes\Post;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use \Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 #[Middleware('auth:sanctum')]
 class CartController
@@ -27,7 +28,7 @@ class CartController
     }
 
     #[Post('cart/products')]
-    public function addProductOrIncrementQuantity(Request $request): CartItemResource
+    public function addProductOrIncrementQuantity(Request $request): JsonResponse
     {
         $request->validate([
             'product_id' => ['required', 'exists:products,id'],
@@ -44,7 +45,9 @@ class CartController
             throw new BadRequestHttpException(__('Could not increment quantity'));
         }
 
-        return new CartItemResource($cartItem);
+        return CartItemResource::make($cartItem)
+            ->response()
+            ->setStatusCode($cartItem->wasRecentlyCreated ? SymfonyResponse::HTTP_CREATED : SymfonyResponse::HTTP_OK);
     }
 
     #[Patch('cart/products/{productId}')]

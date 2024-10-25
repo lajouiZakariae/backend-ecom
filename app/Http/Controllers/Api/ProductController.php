@@ -6,11 +6,9 @@ use App\Filters\ProductQueryFilters;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Resources\ProductResource;
-use App\Models\Cart;
 use App\Models\Product;
 use DB;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
@@ -19,6 +17,7 @@ use Spatie\RouteAttributes\Attributes\ApiResource;
 use Spatie\RouteAttributes\Attributes\WhereNumber;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use \Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 #[ApiResource('products')]
 #[WhereNumber('product')]
@@ -60,7 +59,7 @@ class ProductController
         return ProductResource::collection($paginatedProducts);
     }
 
-    public function store(ProductStoreRequest $productStoreRequest): ProductResource
+    public function store(ProductStoreRequest $productStoreRequest): JsonResponse
     {
         $validatedProductPayload = $productStoreRequest->validated();
 
@@ -70,7 +69,7 @@ class ProductController
             throw new BadRequestHttpException(__("Product Could not be created"));
         }
 
-        return ProductResource::make($product);
+        return ProductResource::make($product)->response()->setStatusCode(SymfonyResponse::HTTP_CREATED);
     }
 
     public function show(int $productId): ProductResource

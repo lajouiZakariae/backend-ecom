@@ -3,16 +3,18 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\RoleEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -71,5 +73,15 @@ class User extends Authenticatable
     public function wishlistedProducts(): BelongsToMany
     {
         return $this->belongsToMany(Product::class);
+    }
+
+    public function hasAdminRole(): bool
+    {
+        return $this->hasRole(RoleEnum::ADMIN);
+    }
+
+    public function hasCustomerRole(): bool
+    {
+        return $this->hasRole(RoleEnum::CUSTOMER);
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\CouponCodeStoreRequest;
 use App\Http\Requests\CouponCodeUpdateRequest;
 use App\Http\Resources\CouponCodeResource;
 use App\Models\CouponCode;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
@@ -14,6 +15,7 @@ use Spatie\RouteAttributes\Attributes\ApiResource;
 use Spatie\RouteAttributes\Attributes\WhereNumber;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use \Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 #[ApiResource('coupon-codes')]
 #[WhereNumber('couponCode')]
@@ -37,7 +39,7 @@ class CouponCodeController
         return CouponCodeResource::collection($paginatedCouponCodes);
     }
 
-    public function store(CouponCodeStoreRequest $couponCodeStoreRequest): CouponCodeResource
+    public function store(CouponCodeStoreRequest $couponCodeStoreRequest): JsonResponse
     {
         $validatedCouponCodePayload = $couponCodeStoreRequest->validated();
 
@@ -47,7 +49,7 @@ class CouponCodeController
             throw new BadRequestHttpException("CouponCode Could not be created");
         }
 
-        return CouponCodeResource::make($couponCode);
+        return CouponCodeResource::make($couponCode)->response()->setStatusCode(SymfonyResponse::HTTP_CREATED);
     }
 
     public function show(int $couponCodeId): CouponCodeResource

@@ -7,6 +7,7 @@ use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Models\Product;
 use App\Services\MediaStorageService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
@@ -15,6 +16,7 @@ use Spatie\RouteAttributes\Attributes\ApiResource;
 use Spatie\RouteAttributes\Attributes\WhereNumber;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use \Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 #[ApiResource('categories')]
 #[WhereNumber('category')]
@@ -40,7 +42,7 @@ class CategoryController
         return CategoryResource::collection($paginatedCategories);
     }
 
-    public function store(Request $request): CategoryResource
+    public function store(Request $request): JsonResponse
     {
         $validatedCategoryPayload = $request->validate([
             'image' => ['required', 'image', 'max:2048'],
@@ -57,7 +59,7 @@ class CategoryController
             throw new BadRequestHttpException("Category Could not be created");
         }
 
-        return CategoryResource::make($category);
+        return CategoryResource::make($category)->response()->setStatusCode(SymfonyResponse::HTTP_CREATED);
     }
 
     public function show(int $categoryId): CategoryResource
