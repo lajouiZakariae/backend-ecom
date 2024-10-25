@@ -6,10 +6,13 @@ use App\Filters\ProductQueryFilters;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Resources\ProductResource;
+use App\Models\Cart;
 use App\Models\Product;
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Spatie\RouteAttributes\Attributes\ApiResource;
 use Spatie\RouteAttributes\Attributes\WhereNumber;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -28,12 +31,22 @@ class ProductController
         ]);
 
         $paginatedProducts = Product::query()
+            ->select('products.*')
+            ->selectSub(function ($query): void {
+                $query->from('cart_items')
+                    ->join('carts', 'cart_items.cart_id', '=', 'carts.id')
+                    ->where('carts.user_id', Auth::id())
+                    ->select(DB::raw('CAST(SUM(cart_items.quantity) AS SIGNED)'))
+                    ->whereColumn('cart_items.product_id', 'products.id')
+                    ->groupBy('cart_items.product_id');
+            }, 'cart_quantity')
             ->tap(new ProductQueryFilters(
                 $request->priceFrom,
                 $request->priceTo,
                 $request->sortBy,
                 $request->order
             ))
+            ->with('category')
             ->paginate($validatedFilters['perPage'] ?? 10);
 
         return ProductResource::collection($paginatedProducts);
@@ -46,7 +59,7 @@ class ProductController
         $product = new Product($validatedProductPayload);
 
         if (!$product->save()) {
-            throw new BadRequestHttpException("Product Could not be created");
+            throw new BadRequestHttpException(__("Product Could not be created"));
         }
 
         return ProductResource::make($product);
@@ -54,7 +67,21 @@ class ProductController
 
     public function show(int $productId): ProductResource
     {
-        $product = Product::find($productId);
+        /**
+         * @var Product|null $product
+         */
+        $product = Product::query()
+            ->select('products.*')
+            ->selectSub(function ($query): void {
+                $query->from('cart_items')
+                    ->join('carts', 'cart_items.cart_id', '=', 'carts.id')
+                    ->where('carts.user_id', Auth::id())
+                    ->select(DB::raw('CAST(SUM(cart_items.quantity) AS SIGNED)'))
+                    ->whereColumn('cart_items.product_id', 'products.id');
+            }, 'cart_quantity')
+            ->where('products.id', $productId)
+            ->with('category')
+            ->first();
 
         if ($product === null) {
             throw new ResourceNotFoundException(__("Product Not Found"));
