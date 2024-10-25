@@ -36,8 +36,6 @@ class ProductStoreRequest extends FormRequest
             'published_at' => ['required', 'date'],
 
             'category_id' => ['required', Rule::exists(Category::class, 'id')],
-
-            'store_id' => ['required', Rule::exists(Store::class, 'id')],
         ];
     }
 }

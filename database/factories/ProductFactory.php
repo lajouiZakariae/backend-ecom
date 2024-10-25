@@ -24,7 +24,6 @@ class ProductFactory extends Factory
             'price' => fake()->randomFloat(max: 2500),
             'published_at' => null,
             'category_id' => Category::factory(),
-            'store_id' => Store::factory(),
         ];
     }
 }

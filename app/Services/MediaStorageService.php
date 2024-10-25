@@ -27,4 +27,9 @@ class MediaStorageService
             ->usingFileName(Str::uuid()->toString() . '.' . $image->extension())
             ->toMediaCollection($collectionName, config('diabolus-config.disk', 'public'));
     }
+
+    public function clearMediaOfModel(HasMedia $model, string $collectionName = 'default'): void
+    {
+        $model->clearMediaCollection($collectionName);
+    }
 }

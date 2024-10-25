@@ -25,14 +25,6 @@ return new class extends Migration {
 
             $table->foreign('category_id')->references('id')->on('categories');
 
-            $table->unsignedBigInteger('store_id')->nullable()->default(1);
-
-            $table->foreign('store_id')->references('id')->on('stores');
-
-            $table->unsignedBigInteger('user_id');
-
-            $table->foreign('user_id')->references('id')->on('users');
-
             $table->timestamps();
         });
     }

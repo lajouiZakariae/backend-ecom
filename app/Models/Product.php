@@ -27,7 +27,6 @@ class Product extends Model
         'price',
         'category_id',
         'store_id',
-        'user_id',
     ];
 
     /**
@@ -51,20 +50,9 @@ class Product extends Model
             ->saveSlugsTo('slug');
     }
 
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
-    }
-
-    public function store(): BelongsTo
-    {
-        return $this->belongsTo(Store::class);
     }
 
     public function thumbnail(): MorphMany

@@ -13,10 +13,6 @@ return new class extends Migration {
         Schema::create('categories', function (Blueprint $table): void {
             $table->id();
 
-            $table->unsignedBigInteger('user_id');
-
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
-
             $table->string('name');
 
             $table->boolean('is_default')->default(false);

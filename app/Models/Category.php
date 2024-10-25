@@ -22,7 +22,6 @@ class Category extends Model implements HasMedia
      * @var array
      */
     protected $fillable = [
-        'user_id',
         'name',
         'is_default',
         'slug',
@@ -46,11 +45,6 @@ class Category extends Model implements HasMedia
     {
         $this->addMediaCollection('image')
             ->singleFile();
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
     }
 
     public function image(): MorphMany

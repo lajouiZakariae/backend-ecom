@@ -36,8 +36,6 @@ class ProductUpdateRequest extends FormRequest
             'published_at' => ['nullable', 'date'],
 
             'category_id' => ['nullable', Rule::exists(Category::class, 'id')],
-
-            'store_id' => ['nullable', Rule::exists(Store::class, 'id')],
         ];
     }
 }
