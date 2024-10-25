@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
@@ -26,6 +27,7 @@ class Product extends Model
         'price',
         'category_id',
         'store_id',
+        'user_id',
     ];
 
     /**
@@ -73,5 +75,10 @@ class Product extends Model
     public function images(): MorphMany
     {
         return $this->media()->where('collection_name', 'images');
+    }
+
+    public function CouponeCodes(): BelongsToMany
+    {
+        return $this->belongsToMany(CouponCode::class);
     }
 }

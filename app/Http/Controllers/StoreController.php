@@ -70,7 +70,7 @@ class StoreController
     {
         Gate::authorize('delete', Store::class);
 
-        $this->storeService->deleteCatgoryById($storeId, Auth::id());
+        $this->storeService->deleteStoreById($storeId, Auth::id());
 
         return response()->noContent();
     }

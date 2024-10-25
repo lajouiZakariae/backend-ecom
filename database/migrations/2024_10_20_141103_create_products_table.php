@@ -13,13 +13,13 @@ return new class extends Migration {
         Schema::create('products', function (Blueprint $table): void {
             $table->id();
 
-            $table->string('title');
+            $table->string('name');
 
             $table->text('description')->nullable();
 
-            $table->unsignedFloat('price')->nullable();
+            $table->decimal('price', 10, 2)->nullable();
 
-            $table->timestamp('published_at')->nullable()->default(false);
+            $table->timestamp('published_at')->nullable();
 
             $table->unsignedBigInteger('category_id')->nullable()->default(1);
 
@@ -29,9 +29,9 @@ return new class extends Migration {
 
             $table->foreign('store_id')->references('id')->on('stores');
 
-            $table->unsignedBigInteger('user_id')->nullable()->default(1);
+            $table->unsignedBigInteger('user_id');
 
-            $table->foreign('user_id')->references('id')->on('stores');
+            $table->foreign('user_id')->references('id')->on('users');
 
             $table->timestamps();
         });

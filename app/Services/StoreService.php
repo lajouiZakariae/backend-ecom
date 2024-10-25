@@ -52,16 +52,17 @@ class StoreService
         return Store::find($storeId);
     }
 
-    public function deleteCatgoryById(int $storeId, int $userId): void
+    public function deleteStoreById(int $storeId, int $userId): void
     {
-        $affectedRowsCount = Store::where('user_id', $userId)->destroy($storeId);
-
-        if ($affectedRowsCount === 0) {
-            throw new ResourceNotFoundException(__('Store Not Found'));
-        }
+        $this->deleteMultipleStoresByIds([$storeId], $userId);
     }
 
     public function deleteMultipleStores(array $storeIds, int $userId): void
+    {
+        $this->deleteMultipleStoresByIds($storeIds, $userId);
+    }
+
+    public function deleteMultipleStoresByIds(array $storeIds, int $userId): void
     {
         $affectedRowsCount = Store::where('user_id', $userId)->destroy($storeIds);
 
