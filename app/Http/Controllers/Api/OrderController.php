@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\PlaceOrderWithPaymentAction;
 use App\Filters\OrderQueryFilters;
 use App\Http\Requests\OrderStoreRequest;
 use App\Http\Requests\OrderUpdateRequest;
 use App\Http\Resources\OrderResource;
+use App\Models\Cart;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,8 +15,10 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Spatie\RouteAttributes\Attributes\ApiResource;
+use Spatie\RouteAttributes\Attributes\Post;
 use Spatie\RouteAttributes\Attributes\WhereNumber;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use \Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
@@ -50,11 +54,33 @@ class OrderController
     {
         $validatedOrderPayload = $orderStoreRequest->validated();
 
-        $order = new Order($validatedOrderPayload);
+        $cart = Cart::where('user_id', Auth::id())->with('cartItems')->first();
+
+        if (!$cart) {
+            throw new NotFoundHttpException(__(':reource not found', ['resource' => __('Cart')]));
+        }
+
+        if ($cart->cartItems->isEmpty()) {
+            throw new BadRequestHttpException(__('Cart cannot be empty'));
+        }
+
+        $order = new Order([...$validatedOrderPayload]);
 
         if (!$order->save()) {
             throw new BadRequestHttpException(__("Order Could not be created"));
         }
+
+        return OrderResource::make($order)->response()->setStatusCode(SymfonyResponse::HTTP_CREATED);
+    }
+
+    #[Post('orders/place-order')]
+    public function placeOrder(Request $orderStoreRequest, PlaceOrderWithPaymentAction $placeOrderWithPaymentAction): JsonResponse
+    {
+        $orderStoreRequest->validate([
+            'payment_method_id' => ['required'],
+        ]);
+
+        $order = $placeOrderWithPaymentAction->handle();
 
         return OrderResource::make($order)->response()->setStatusCode(SymfonyResponse::HTTP_CREATED);
     }

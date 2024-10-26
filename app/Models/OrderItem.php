@@ -13,7 +13,13 @@ class OrderItem extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['order_id'];
+    protected $fillable = [
+        'order_id',
+        'product_id',
+        'product_sold_price',
+        'product_title',
+        'quantity',
+    ];
 
     public function order(): BelongsTo
     {

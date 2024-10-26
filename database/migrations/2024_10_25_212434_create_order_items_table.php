@@ -13,9 +13,19 @@ return new class extends Migration {
         Schema::create('order_items', function (Blueprint $table): void {
             $table->id();
 
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('order_id');
 
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('order_id')->references('id')->on('orders');
+
+            $table->unsignedBigInteger('product_id');
+
+            $table->foreign('product_id')->references('id')->on('products');
+
+            $table->decimal('product_sold_price', 10, 2);
+
+            $table->string('product_title');
+
+            $table->integer('quantity');
         });
     }
 
