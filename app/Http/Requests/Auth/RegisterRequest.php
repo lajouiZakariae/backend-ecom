@@ -24,34 +24,20 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'auth_provider' => ['required', Rule::in(['email', 'google'])],
-
-            /**
-             * required if auth_provider is email
-             * @body  
-             */
             'first_name' => [
-                Rule::requiredIf(fn(): bool => $this->auth_provider === 'email'),
+                'required',
                 'string',
                 'max:255',
             ],
 
-            /**
-             * required if auth_provider is email
-             * @body  
-             */
             'last_name' => [
-                Rule::requiredIf(fn(): bool => $this->auth_provider === 'email'),
+                'required',
                 'string',
                 'max:255',
             ],
 
-            /**
-             * required if auth_provider is email
-             * @body
-             */
             'email' => [
-                Rule::requiredIf(fn(): bool => $this->auth_provider === 'email'),
+                'required',
                 'string',
                 'email',
                 'max:255',
@@ -63,23 +49,10 @@ class RegisterRequest extends FormRequest
                 'max:255',
             ],
 
-            /**
-             * required if auth_provider is email
-             *  @body
-             */
             'password' => [
-                Rule::requiredIf(fn(): bool => $this->auth_provider === 'email'),
+                'required',
                 'confirmed',
                 Password::defaults()
-            ],
-
-            /**
-             * required if auth_provider is google
-             *  @body
-             */
-            'code' => [
-                Rule::requiredIf(fn(): bool => in_array($this->auth_provider, ['google'])),
-                'string'
             ],
         ];
     }

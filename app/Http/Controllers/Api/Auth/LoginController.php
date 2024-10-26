@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use App\Services\Auth\Login\AuthContext;
 use Hash;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Spatie\RouteAttributes\Attributes\Post;
 use \Symfony\Component\HttpFoundation\Response;
 use Illuminate\Auth\Events\Lockout;
@@ -23,59 +22,42 @@ class LoginController
     /**
      * Login Request.
      * 
-     * @param LoginRequest $request
+     * @param Request $request
      * @return JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
     #[Post('login', 'login')]
-    public function store(LoginRequest $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
+        $request->validate([
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+
         $this->ensureIsNotRateLimited();
 
-        try {
-            $authContext = new AuthContext($request->input('auth_provider'));
-
-            $user = $authContext->authenticate($request->validated());
-
-            $token = $user->createToken('api_token')->plainTextToken;
-        } catch (ValidationException $exception) {
-            RateLimiter::hit($this->throttleKey(), 5);
-
-            throw $exception;
-        }
-
-        return UserResource::make($user->load(['firstRole']))
-            ->additional(['meta' => ['token' => $token]])
-            ->response()
-            ->setStatusCode(Response::HTTP_CREATED);
-    }
-
-    /**
-     * Attempt to authenticate the request's credentials.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    private function authenticate($inputs): array
-    {
         /**
          * @var \App\Models\User|null $user
          */
-        $user = User::where('email', data_get($inputs, 'email'))->first();
+        $user = User::where('email', $request->email)->first();
 
         if (
             !$user ||
-            Hash::check(data_get($inputs, 'password'), $user->password) === false
+            Hash::check($request->password, $user->password) === false
         ) {
+            RateLimiter::hit($this->throttleKey(), 5);
+
             throw ValidationException::withMessages([
                 'email' => __('These credentials do not match our records'),
             ]);
         }
 
-        RateLimiter::clear($this->throttleKey());
-
         $token = $user->createToken('api_token')->plainTextToken;
 
-        return [$user, $token];
+        return UserResource::make($user->load(['firstRole']))
+            ->additional(['meta' => ['token' => $token]])
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**

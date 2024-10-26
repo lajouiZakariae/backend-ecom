@@ -22,14 +22,16 @@ class DatabaseSeeder extends Seeder
         RoleEnum::map(fn(string $name): Role => Role::create(['name' => $name]));
 
         $user = User::factory()->create([
-            'name' => 'Test User',
+            'first_name' => 'Customer',
+            'last_name' => 'One',
             'email' => 'customer@one.com',
         ]);
 
         $user->assignRole(RoleEnum::CUSTOMER);
 
         $admin = User::factory()->create([
-            'name' => 'Admin One',
+            'first_name' => 'Admin',
+            'last_name' => 'One',
             'email' => 'admin@one.com',
         ]);
 
