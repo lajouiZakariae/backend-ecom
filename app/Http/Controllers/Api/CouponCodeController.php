@@ -23,18 +23,18 @@ class CouponCodeController
 {
     public function index(Request $request): ResourceCollection
     {
-        $validatedFilters = $request->validate([
-            'sortBy' => ['in:oldest,latest'],
+        $request->validate([
+            'sort_by' => ['in:created_at'],
             'order' => ['in:asc,desc'],
-            'perPage' => ['integer', 'min:1', 'max:100'],
+            'per_page' => ['integer', 'min:1', 'max:100'],
         ]);
 
         $paginatedCouponCodes = CouponCode::query()
             ->tap(new CouponCodeQueryFilters(
-                $request->sortBy,
+                $request->sort_by,
                 $request->order
             ))
-            ->paginate($validatedFilters['perPage'] ?? 10);
+            ->paginate($request->per_page ?? 10);
 
         return CouponCodeResource::collection($paginatedCouponCodes);
     }

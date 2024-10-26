@@ -10,12 +10,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
+use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasRoles, Notifiable, Billable;
+    use HasFactory, HasRoles, Notifiable, Billable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -26,6 +27,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'google_id',
     ];
 
     /**
@@ -84,5 +86,10 @@ class User extends Authenticatable
     public function hasCustomerRole(): bool
     {
         return $this->hasRole(RoleEnum::CUSTOMER);
+    }
+
+    public function firstRole(): BelongsToMany
+    {
+        return $this->roles()->limit(1);
     }
 }

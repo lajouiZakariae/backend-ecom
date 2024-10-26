@@ -25,10 +25,10 @@ class ProductController
 {
     public function index(Request $request): ResourceCollection
     {
-        $validatedFilters = $request->validate([
-            'sortBy' => ['in:oldest,latest'],
+        $request->validate([
+            'sort_by' => ['in:created_at'],
             'order' => ['in:asc,desc'],
-            'perPage' => ['integer', 'min:1', 'max:100'],
+            'per_page' => ['integer', 'min:1', 'max:100'],
         ]);
 
         $paginatedProducts = Product::query()
@@ -50,11 +50,11 @@ class ProductController
             ->tap(new ProductQueryFilters(
                 $request->priceFrom,
                 $request->priceTo,
-                $request->sortBy,
+                $request->sort_by,
                 $request->order
             ))
             ->with('category')
-            ->paginate($validatedFilters['perPage'] ?? 10);
+            ->paginate($request->per_page ?? 10);
 
         return ProductResource::collection($paginatedProducts);
     }

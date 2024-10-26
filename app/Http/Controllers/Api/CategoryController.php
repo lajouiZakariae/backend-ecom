@@ -29,15 +29,15 @@ class CategoryController
 
     public function index(Request $request): ResourceCollection
     {
-        $validatedFilters = $request->validate([
-            'sortBy' => ['in:name,created_at'],
+        $request->validate([
+            'sort_by' => ['in:name,created_at'],
             'order' => ['in:asc,desc'],
-            'perPage' => ['integer', 'min:1', 'max:100'],
+            'per_page' => ['integer', 'min:1', 'max:100'],
         ]);
 
         $paginatedCategories = Category::query()
-            ->tap(new CategoryFilters($validatedFilters['sortBy'], $validatedFilters['order']))
-            ->paginate($validatedFilters['perPage'] ?? 10);
+            ->tap(new CategoryFilters($request->sort_by, $request->order))
+            ->paginate($request->per_page ?? 10);
 
         return CategoryResource::collection($paginatedCategories);
     }
