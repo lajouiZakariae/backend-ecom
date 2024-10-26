@@ -74,15 +74,17 @@ class OrderController
     }
 
     #[Post('orders/place-order')]
-    public function placeOrder(Request $orderStoreRequest, PlaceOrderWithPaymentAction $placeOrderWithPaymentAction): JsonResponse
+    public function placeOrder(Request $request, PlaceOrderWithPaymentAction $placeOrderWithPaymentAction): JsonResponse
     {
-        $orderStoreRequest->validate([
+        $request->validate([
             'payment_method_id' => ['required'],
         ]);
 
-        $order = $placeOrderWithPaymentAction->handle();
+        $order = $placeOrderWithPaymentAction->handle($request->payment_method_id);
 
-        return OrderResource::make($order)->response()->setStatusCode(SymfonyResponse::HTTP_CREATED);
+        return response()->json($order);
+
+        // return OrderResource::make($order)->response()->setStatusCode(SymfonyResponse::HTTP_CREATED);
     }
 
     public function show(int $orderId): OrderResource

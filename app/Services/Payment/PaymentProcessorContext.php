@@ -31,8 +31,8 @@ class PaymentProcessorContext
     }
 
 
-    public function payPlanPriceForUser(User $user, float $amount, array $options = []): mixed
+    public function payAmountForUser(User $user, float $amount, array $options = []): mixed
     {
-        return $this->paymentProcessorStrategy->payPlanPriceForUser($user, $amount, $options);
+        return $this->paymentProcessorStrategy->payAmountForUser($user, $amount, $options);
     }
 }

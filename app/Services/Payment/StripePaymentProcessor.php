@@ -4,16 +4,26 @@ namespace App\Services\Payment;
 
 use App\Interfaces\PaymentProcessorInterface;
 use App\Models\User;
+use Laravel\Prompts\Output\ConsoleOutput;
 
 class StripePaymentProcessor implements PaymentProcessorInterface
 {
-    public function payPlanPriceForUser(User $user, float $amount, array $options = []): mixed
+    public function payAmountForUser(User $user, float $amount, array $options = []): mixed
     {
-        $user->createOrGetStripeCustomer();
+        /**
+         * @var \Stripe\Customer $stripeUser
+         */
+        $stripeUser = $user->createOrGetStripeCustomer();
 
-        // dd($user->s);
+        // if (!$paymentMethod = $user->findPaymentMethod($options['payment_method_id'])) {
+        //     $paymentMethod = $user->addPaymentMethod($options['payment_method_id']);
+        // }
 
-        $paymentMethod = $user->addPaymentMethod($options['payment_method']);
+        // logger()->info($paymentMethod);
+
+        // dd($user->findPaymentMethod($options['payment_method_id']));
+
+        return $user->paymentMethods();
 
         $paymentIntent = $user->pay($amount, [
             'payment_method' => $paymentMethod->id,

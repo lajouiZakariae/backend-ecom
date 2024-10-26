@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Order;
+use App\Services\Payment\PaymentProcessorContext;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -12,8 +13,19 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PlaceOrderWithPaymentAction
 {
-    public function handle(): void
+    public function handle(string $paymentMethodId): mixed
     {
+        /**
+         * @var \App\Models\User
+         */
+        $user = Auth::user();
+
+        $stripePaymentProcessor = new PaymentProcessorContext('stripe');
+
+        return $stripePaymentProcessor->payAmountForUser($user, 100, [
+            'payment_method_id' => $paymentMethodId,
+        ]);
+
         $cart = Cart::where('user_id', Auth::id())->with('cartItems.product')->first();
 
         if (!$cart) {
