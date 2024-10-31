@@ -7,7 +7,6 @@ use App\Models\User;
 use Hash;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Spatie\RouteAttributes\Attributes\Post;
 use \Symfony\Component\HttpFoundation\Response;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\RateLimiter;
@@ -26,7 +25,6 @@ class LoginController
      * @return JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    #[Post('login', 'login')]
     public function store(Request $request): JsonResponse
     {
         $request->validate([

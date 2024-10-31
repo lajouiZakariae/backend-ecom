@@ -13,7 +13,6 @@
         "laravel/tinker": "^2.9",
         "spatie/laravel-medialibrary": "^11.9",
         "spatie/laravel-permission": "^6.9",
-        "spatie/laravel-route-attributes": "^1.24",
         "spatie/laravel-sluggable": "^3.6"
     },
     "require-dev": {

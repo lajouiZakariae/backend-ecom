@@ -13,14 +13,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Spatie\RouteAttributes\Attributes\ApiResource;
-use Spatie\RouteAttributes\Attributes\WhereNumber;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use \Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
-#[ApiResource('products')]
-#[WhereNumber('product')]
 class ProductController
 {
     public function index(Request $request): ResourceCollection

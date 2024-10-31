@@ -12,14 +12,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Spatie\RouteAttributes\Attributes\ApiResource;
-use Spatie\RouteAttributes\Attributes\WhereNumber;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use \Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
-#[ApiResource('categories')]
-#[WhereNumber('category')]
 class CategoryController
 {
     public function __construct(

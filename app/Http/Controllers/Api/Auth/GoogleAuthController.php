@@ -7,15 +7,13 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Laravel\Socialite\Facades\Socialite;
-use Spatie\RouteAttributes\Attributes\Post;
-use \Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @tags Auth
  */
 class GoogleAuthController
 {
-    #[Post('google-with-google', 'google-with-google')]
     public function store(): JsonResponse
     {
         /**
@@ -31,11 +29,11 @@ class GoogleAuthController
          */
         $user = User::updateOrCreate(
             [
-                'email' => $googleUser->getEmail()
+                'email' => $googleUser->getEmail(),
             ],
             [
-                'first_name' => str($googleUser->getName())->split(' ')->first(),
-                'last_name' => str($googleUser->getName())->split(' ')->last(),
+                'first_name' => str($googleUser->getName())->before(' '),
+                'last_name' => str($googleUser->getName())->after(' '),
                 'google_id' => $googleUser->getId(),
             ]
         );

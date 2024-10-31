@@ -17,7 +17,8 @@ class CouponCodeFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'code' => $this->faker->unique()->randomNumber(6),
+            'amount' => $this->faker->randomFloat(2, 1, 100),
         ];
     }
 }

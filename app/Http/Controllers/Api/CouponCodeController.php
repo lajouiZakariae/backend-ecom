@@ -11,14 +11,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
-use Spatie\RouteAttributes\Attributes\ApiResource;
-use Spatie\RouteAttributes\Attributes\WhereNumber;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use \Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
-#[ApiResource('coupon-codes')]
-#[WhereNumber('couponCode')]
 class CouponCodeController
 {
     public function index(Request $request): ResourceCollection

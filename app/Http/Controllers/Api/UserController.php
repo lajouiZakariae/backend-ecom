@@ -12,15 +12,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Auth;
-use Spatie\RouteAttributes\Attributes\ApiResource;
-use Spatie\RouteAttributes\Attributes\Get;
-use Spatie\RouteAttributes\Attributes\Middleware;
-use Spatie\RouteAttributes\Attributes\Put;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-#[ApiResource('users')]
-#[Middleware('auth:sanctum')]
 class UserController
 {
     public function index(Request $request): ResourceCollection
@@ -94,13 +88,11 @@ class UserController
         return response()->noContent();
     }
 
-    #[Get('auth-user')]
     public function authenticatedUser(): UserResource
     {
         return new UserResource(Auth::user());
     }
 
-    #[Put('auth-user')]
     public function updateAuthenticatedUser(Request $request): UserResource
     {
         $user = Auth::user();

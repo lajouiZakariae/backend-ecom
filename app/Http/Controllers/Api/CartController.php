@@ -8,18 +8,11 @@ use App\Models\Cart;
 use Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Spatie\RouteAttributes\Attributes\Delete;
-use Spatie\RouteAttributes\Attributes\Get;
-use Spatie\RouteAttributes\Attributes\Middleware;
-use Spatie\RouteAttributes\Attributes\Patch;
-use Spatie\RouteAttributes\Attributes\Post;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use \Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
-#[Middleware('auth:sanctum')]
 class CartController
 {
-    #[Get('cart')]
     public function show(): CartResource
     {
         $cart = $this->getUserCart();
@@ -27,7 +20,6 @@ class CartController
         return new CartResource($cart);
     }
 
-    #[Post('cart/products')]
     public function addProductOrIncrementQuantity(Request $request): JsonResponse
     {
         $request->validate([
@@ -50,7 +42,6 @@ class CartController
             ->setStatusCode($cartItem->wasRecentlyCreated ? SymfonyResponse::HTTP_CREATED : SymfonyResponse::HTTP_OK);
     }
 
-    #[Patch('cart/products/{productId}')]
     public function update(Request $request, int $productId): CartItemResource
     {
         $request->validate([
@@ -72,7 +63,6 @@ class CartController
         return new CartItemResource($cartItem);
     }
 
-    #[Delete('cart/product/{productId}')]
     public function removeProduct(int $productId): JsonResponse
     {
         $this->getUserCart()->cartItems()->where('product_id', $productId)->delete();
@@ -80,7 +70,6 @@ class CartController
         return response()->noContent();
     }
 
-    #[Patch('cart/product/{productId}/decrement')]
     public function decrementQuantityOrDeleteProduct(Request $request, int $productId): CartItemResource|JsonResponse
     {
         $cartItem = $this->getUserCart()->cartItems()->where('product_id', $productId)->first();
@@ -102,7 +91,6 @@ class CartController
         return response()->noContent();
     }
 
-    #[Delete('cart/clear')]
     public function clearCart(): JsonResponse
     {
         $this->getUserCart()->cartItems()->delete();

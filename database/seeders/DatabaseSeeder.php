@@ -2,15 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Enums\RoleEnum;
-use App\Models\Cart;
-use App\Models\CartItem;
-use App\Models\Category;
-use App\Models\Product;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
+use App\Models\Cart;
+use App\Models\CartItem;
+use App\Models\Product;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,29 +16,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        RoleEnum::map(fn(string $name): Role => Role::create(['name' => $name]));
-
-        $user = User::factory()->create([
-            'first_name' => 'Customer',
-            'last_name' => 'One',
-            'email' => 'customer@one.com',
+        $this->call([
+            RoleSeeder::class,
+            UserSeeder::class,
+            CategorySeeder::class,
+            CouponCodeSeeder::class,
+            ProductSeeder::class,
         ]);
 
-        $user->assignRole(RoleEnum::CUSTOMER);
+        $customer = User::where('email', 'customer@one.com')->first();
 
-        $admin = User::factory()->create([
-            'first_name' => 'Admin',
-            'last_name' => 'One',
-            'email' => 'admin@one.com',
-        ]);
-
-        $admin->assignRole(RoleEnum::ADMIN);
-
-        Category::factory(10)->create();
-
-        Product::factory(5)->create();
-
-        $cart = Cart::firstOrCreate(['user_id' => $user->id]);
+        $cart = Cart::firstOrCreate(['user_id' => $customer->id]);
 
         $products = Product::take(2)->get();
 
@@ -57,6 +42,6 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        $user->wishlistedProducts()->attach($products[0]->id);
+        $customer->wishlistedProducts()->attach($products[0]->id);
     }
 }

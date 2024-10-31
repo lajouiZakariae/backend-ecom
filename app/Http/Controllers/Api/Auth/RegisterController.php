@@ -7,7 +7,6 @@ use App\Http\Resources\UserResource;
 use App\Services\Auth\Register\RegisterContext;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
-use Spatie\RouteAttributes\Attributes\Post;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -20,7 +19,6 @@ class RegisterController
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    #[Post('register', 'register')]
     public function store(RegisterRequest $request): JsonResponse
     {
         $registerContext = new RegisterContext($request->input('auth_provider'));

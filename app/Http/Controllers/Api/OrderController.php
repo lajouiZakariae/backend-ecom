@@ -14,16 +14,11 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Spatie\RouteAttributes\Attributes\ApiResource;
-use Spatie\RouteAttributes\Attributes\Post;
-use Spatie\RouteAttributes\Attributes\WhereNumber;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use \Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
-#[ApiResource('orders')]
-#[WhereNumber('order')]
 class OrderController
 {
     public function index(Request $request): ResourceCollection
@@ -73,7 +68,6 @@ class OrderController
         return OrderResource::make($order)->response()->setStatusCode(SymfonyResponse::HTTP_CREATED);
     }
 
-    #[Post('orders/place-order')]
     public function placeOrder(Request $request, PlaceOrderWithPaymentAction $placeOrderWithPaymentAction): JsonResponse
     {
         $request->validate([
@@ -82,9 +76,7 @@ class OrderController
 
         $order = $placeOrderWithPaymentAction->handle($request->payment_method_id);
 
-        return response()->json($order);
-
-        // return OrderResource::make($order)->response()->setStatusCode(SymfonyResponse::HTTP_CREATED);
+        return OrderResource::make($order)->response()->setStatusCode(SymfonyResponse::HTTP_CREATED);
     }
 
     public function show(int $orderId): OrderResource
