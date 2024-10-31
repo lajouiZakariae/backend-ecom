@@ -24,9 +24,9 @@ class OrderController
     public function index(Request $request): ResourceCollection
     {
         $request->validate([
-            'sort_by' => ['in:created_at'],
+            'sortBy' => ['in:created_at'],
             'order' => ['in:asc,desc'],
-            'per_page' => ['integer', 'min:1', 'max:100'],
+            'perPage' => ['integer', 'min:1', 'max:100'],
         ]);
 
         /**
@@ -37,10 +37,10 @@ class OrderController
         $paginatedOrders = Order::query()
             ->tap(new OrderQueryFilters(
                 $user->hasCustomerRole() ? Auth::id() : null,
-                $request->sort_by,
+                $request->sortBy,
                 $request->order,
             ))
-            ->paginate($request->per_page ?? 10);
+            ->paginate($request->perPage ?? 10);
 
         return OrderResource::collection($paginatedOrders);
     }

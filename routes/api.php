@@ -13,61 +13,65 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WishlistedProductController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('google/login', [GoogleAuthController::class, 'store']);
+Route::prefix('v1')->group(function (): void {
 
-Route::post('login', [LoginController::class, 'store']);
+    Route::post('google/login', [GoogleAuthController::class, 'store']);
 
-Route::post('register', [RegisterController::class, 'store']);
+    Route::post('login', [LoginController::class, 'store']);
 
-Route::post('logout', [LogoutController::class, 'destroy']);
+    Route::post('register', [RegisterController::class, 'store']);
 
-Route::middleware('auth:sanctum')->group(function (): void {
-    // User routes
-    Route::apiResource('users', UserController::class);
+    Route::post('logout', [LogoutController::class, 'destroy']);
 
-    Route::get('auth-user', [UserController::class, 'authenticatedUser']);
+    Route::middleware('auth:sanctum')->group(function (): void {
+        // User routes
+        Route::apiResource('users', UserController::class);
 
-    Route::put('auth-user', [UserController::class, 'updateAuthenticatedUser']);
+        Route::get('auth-user', [UserController::class, 'authenticatedUser']);
 
-    // Category routes
-    Route::apiResource('categories', CategoryController::class);
+        Route::put('auth-user', [UserController::class, 'updateAuthenticatedUser']);
 
-    Route::delete('categories/delete-multiple', [CategoryController::class, 'destroyMultiple']);
+        // Category routes
+        Route::apiResource('categories', CategoryController::class);
 
-    // Coupon code routes
-    Route::apiResource('coupon-codes', CouponCodeController::class);
+        Route::delete('categories/delete-multiple', [CategoryController::class, 'destroyMultiple']);
 
-    Route::delete('coupon-codes/delete-multiple', [CouponCodeController::class, 'destroyMultiple']);
+        // Coupon code routes
+        Route::apiResource('coupon-codes', CouponCodeController::class);
 
-    // Product routes
-    Route::apiResource('products', ProductController::class);
+        Route::delete('coupon-codes/delete-multiple', [CouponCodeController::class, 'destroyMultiple']);
 
-    Route::delete('products/delete-multiple', [ProductController::class, 'destroyMultiple']);
+        // Product routes
+        Route::apiResource('products', ProductController::class);
 
-    // Wishlist routes
-    Route::get('wishlist', [WishlistedProductController::class, 'index']);
+        Route::delete('products/delete-multiple', [ProductController::class, 'destroyMultiple']);
 
-    Route::post('wishlist/{productId}', [WishlistedProductController::class, 'store']);
+        // Wishlist routes
+        Route::get('wishlist', [WishlistedProductController::class, 'index']);
 
-    Route::delete('wishlist/{productId}', [WishlistedProductController::class, 'destroy']);
+        Route::post('wishlist/{productId}', [WishlistedProductController::class, 'store']);
 
-    // Order routes
-    Route::apiResource('orders', OrderController::class);
+        Route::delete('wishlist/{productId}', [WishlistedProductController::class, 'destroy']);
 
-    Route::post('orders/place-order', [OrderController::class, 'placeOrder']);
+        // Order routes
+        Route::apiResource('orders', OrderController::class);
 
-    Route::delete('orders/delete-multiple', [OrderController::class, 'destroyMultiple']);
+        Route::post('orders/place-order', [OrderController::class, 'placeOrder']);
 
-    // Cart routes
-    Route::get('cart', [CartController::class, 'show']);
+        Route::delete('orders/delete-multiple', [OrderController::class, 'destroyMultiple']);
 
-    Route::post('cart/products', [CartController::class, 'addProductOrIncrementQuantity']);
+        // Cart routes
+        Route::get('cart', [CartController::class, 'show']);
 
-    Route::patch('cart/products/{productId}', [CartController::class, 'update']);
+        Route::post('cart/products', [CartController::class, 'addProductOrIncrementQuantity']);
 
-    Route::delete('cart/product/{productId}', [CartController::class, 'removeProduct']);
+        Route::patch('cart/products/{productId}', [CartController::class, 'update']);
 
-    Route::patch('cart/product/{productId}/decrement', [CartController::class, 'decrementQuantityOrDeleteProduct']);
+        Route::delete('cart/product/{productId}', [CartController::class, 'removeProduct']);
 
-    Route::delete('cart/clear', [CartController::class, 'clearCart']);
+        Route::patch('cart/product/{productId}/decrement', [CartController::class, 'decrementQuantityOrDeleteProduct']);
+
+        Route::delete('cart/clear', [CartController::class, 'clearCart']);
+    });
+
 });

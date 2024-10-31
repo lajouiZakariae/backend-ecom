@@ -22,9 +22,9 @@ class ProductController
     public function index(Request $request): ResourceCollection
     {
         $request->validate([
-            'sort_by' => ['in:created_at'],
+            'sortBy' => ['in:created_at'],
             'order' => ['in:asc,desc'],
-            'per_page' => ['integer', 'min:1', 'max:100'],
+            'perPage' => ['integer', 'min:1', 'max:100'],
         ]);
 
         $paginatedProducts = Product::query()
@@ -46,11 +46,11 @@ class ProductController
             ->tap(new ProductQueryFilters(
                 $request->priceFrom,
                 $request->priceTo,
-                $request->sort_by,
+                $request->sortBy,
                 $request->order
             ))
             ->with('category')
-            ->paginate($request->per_page ?? 10);
+            ->paginate($request->perPage ?? 10);
 
         return ProductResource::collection($paginatedProducts);
     }

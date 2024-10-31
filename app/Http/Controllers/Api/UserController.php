@@ -20,14 +20,14 @@ class UserController
     public function index(Request $request): ResourceCollection
     {
         $request->validate([
-            'sort_by' => ['in:created_at'],
+            'sortBy' => ['in:created_at'],
             'order' => ['in:asc,desc'],
-            'per_page' => ['integer', 'min:1', 'max:100'],
+            'perPage' => ['integer', 'min:1', 'max:100'],
         ]);
 
         $users = User::query()
             ->tap(new UserQueryFilters(RoleEnum::CUSTOMER))
-            ->paginate($request->per_page);
+            ->paginate($request->perPage);
 
         return UserResource::collection($users);
     }
