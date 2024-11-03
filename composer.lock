@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "73da4b88f478d6d744c85f3e5f31d326",
+    "content-hash": "582a7478bd9fc258cf83e258a3155329",
     "packages": [
         {
             "name": "brick/math",
@@ -1197,6 +1197,60 @@
                 }
             ],
             "time": "2023-12-03T19:50:20+00:00"
+        },
+        {
+            "name": "lajouizakariae/lara-generator",
+            "version": "v0.25",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lajouiZakariae/lara-generator.git",
+                "reference": "691f544607f6e972183e52844e1d7fa16d0ca51e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lajouiZakariae/lara-generator/zipball/691f544607f6e972183e52844e1d7fa16d0ca51e",
+                "reference": "691f544607f6e972183e52844e1d7fa16d0ca51e",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": ">=11.0",
+                "php": "^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "LaravelGenerator\\LaravelGeneratorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "LaravelGenerator\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Zakariae Lajoui",
+                    "email": "lajoui.zakariae.1@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Laravel Custom Generator",
+            "homepage": "https://github.com/lajouizakariae/lara-generator",
+            "keywords": [
+                "lajouizakariae",
+                "lara-generator"
+            ],
+            "support": {
+                "issues": "https://github.com/lajouiZakariae/lara-generator/issues",
+                "source": "https://github.com/lajouiZakariae/lara-generator/tree/v0.25"
+            },
+            "time": "2024-11-02T18:33:47+00:00"
         },
         {
             "name": "laravel/cashier",

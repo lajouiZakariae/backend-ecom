@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware\pkg_shop;
+namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Auth\AuthenticationException;
