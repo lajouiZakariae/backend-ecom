@@ -9,8 +9,7 @@ class UserQueryFilters
 {
     public function __construct(
         private ?RoleEnum $role = null,
-        private string $sortBy = 'created_at',
-        private string $order = 'asc',
+        private ?string $search = null
     ) {
     }
 
@@ -23,6 +22,12 @@ class UserQueryFilters
             );
         }
 
-        $usersQuery->orderBy($this->sortBy, $this->order);
+        if ($this->search) {
+            $usersQuery->whereAny(
+                ['email', 'first_name', 'last_name'],
+                'like',
+                "%{$this->search}%",
+            );
+        }
     }
 }

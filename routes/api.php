@@ -27,6 +27,8 @@ Route::prefix('v1')->group(function (): void {
         // User routes
         Route::apiResource('users', UserController::class);
 
+        Route::delete('users', [UserController::class, 'destroyMany']);
+
         Route::get('auth-user', [UserController::class, 'authenticatedUser']);
 
         Route::put('auth-user', [UserController::class, 'updateAuthenticatedUser']);

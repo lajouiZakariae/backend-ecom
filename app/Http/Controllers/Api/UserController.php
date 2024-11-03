@@ -8,9 +8,9 @@ use App\Http\Requests\UserStoreRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use DB;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -20,13 +20,14 @@ class UserController
     public function index(Request $request): ResourceCollection
     {
         $request->validate([
+            'search' => ['nullable', 'string', 'max:255'],
             'sortBy' => ['in:email,first_name,last_name,created_at'],
             'order' => ['in:asc,desc'],
             'perPage' => ['integer', 'min:1', 'max:100'],
         ]);
 
         $users = User::query()
-            ->tap(new UserQueryFilters(RoleEnum::CUSTOMER))
+            ->tap(new UserQueryFilters(RoleEnum::CUSTOMER, $request->search))
             ->orderBy($request->sortBy ?? 'created_at', $request->order ?? 'desc')
             ->paginate($request->perPage);
 
@@ -78,9 +79,27 @@ class UserController
         return UserResource::make(User::find($userId));
     }
 
-    public function destroy(int $userId): JsonResponse
+    public function destroy(int $userId): Response
     {
         $affectedRowsCount = User::destroy($userId);
+
+        if ($affectedRowsCount === 0) {
+            throw new NotFoundHttpException(__(':resource not found', ['resource' => __('User')]));
+        }
+
+        return response()->noContent();
+    }
+
+    public function destroyMany(Request $request): Response
+    {
+        $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:users,id'],
+        ]);
+
+        $affectedRowsCount = User::role(RoleEnum::CUSTOMER)
+            ->whereIn('id', $request->ids)
+            ->delete();
 
         if ($affectedRowsCount === 0) {
             throw new NotFoundHttpException(__(':resource not found', ['resource' => __('User')]));
