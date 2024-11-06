@@ -33,6 +33,7 @@ class CategoryController
 
         $paginatedCategories = Category::query()
             ->tap(new CategoryFilters($request->sortBy, $request->order))
+            ->with('image')
             ->paginate($request->perPage ?? 10);
 
         return CategoryResource::collection($paginatedCategories);
@@ -60,7 +61,7 @@ class CategoryController
 
     public function show(int $categoryId): CategoryResource
     {
-        $category = Category::find($categoryId);
+        $category = Category::with('image')->find($categoryId);
 
         if ($category === null) {
             throw new ResourceNotFoundException(__("Category Not Found"));
@@ -71,12 +72,12 @@ class CategoryController
 
     public function update(Request $request, int $categoryId): CategoryResource
     {
-        $validatedCategoryPayload = $request->validate([
+        $request->validate([
             'image' => ['nullable', 'image', 'max:2048'],
             'name' => ['required', 'min:1', 'max:255'],
         ]);
 
-        $affectedRowsCount = Category::where('id', $categoryId)->update($validatedCategoryPayload);
+        $affectedRowsCount = Category::where('id', $categoryId)->update($request->except('image', '_method'));
 
         if ($affectedRowsCount === 0) {
             throw new ResourceNotFoundException(__("Category Not Found"));
@@ -122,8 +123,8 @@ class CategoryController
     public function destroyMultiple(Request $request): Response
     {
         $validatedCategoryIds = $request->validate([
-            'categoryIds' => ['required', 'array', 'min:1'],
-            'categoryIds.*' => ['required', 'integer', 'exists:categories,id'],
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['required', 'integer', 'exists:categories,id'],
         ]);
 
         $defaultCategory = Category::where('is_default', true)->first();

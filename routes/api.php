@@ -36,12 +36,12 @@ Route::prefix('v1')->group(function (): void {
         // Category routes
         Route::apiResource('categories', CategoryController::class);
 
-        Route::delete('categories/delete-multiple', [CategoryController::class, 'destroyMultiple']);
+        Route::delete('categories', [CategoryController::class, 'destroyMultiple']);
 
         // Coupon code routes
         Route::apiResource('coupon-codes', CouponCodeController::class);
 
-        Route::delete('coupon-codes/delete-multiple', [CouponCodeController::class, 'destroyMultiple']);
+        Route::delete('coupon-codes', [CouponCodeController::class, 'destroyMultiple']);
 
         // Product routes
         Route::apiResource('products', ProductController::class);
