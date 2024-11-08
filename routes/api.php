@@ -21,9 +21,10 @@ Route::prefix('v1')->group(function (): void {
 
     Route::post('register', [RegisterController::class, 'store']);
 
-    Route::post('logout', [LogoutController::class, 'destroy']);
 
     Route::middleware('auth:sanctum')->group(function (): void {
+        Route::post('logout', [LogoutController::class, 'destroy']);
+
         // User routes
         Route::apiResource('users', UserController::class);
 

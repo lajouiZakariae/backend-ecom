@@ -16,7 +16,12 @@ class LogoutController
      */
     public function destroy(): Response
     {
-        auth()->user()->tokens()->delete();
+        /**
+         * @var \App\Models\User $user
+         */
+        $user = auth()->user();
+
+        $user->currentAccessToken()->delete();
 
         return response()->noContent();
     }
