@@ -21,7 +21,7 @@ class UserController
     {
         $request->validate([
             'search' => ['nullable', 'string', 'max:255'],
-            'sortBy' => ['in:email,first_name,last_name,created_at'],
+            'sortBy' => ['in:id,email,first_name,last_name,created_at'],
             'order' => ['in:asc,desc'],
             'perPage' => ['integer', 'min:1', 'max:100'],
         ]);
