@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use Hash;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use \Symfony\Component\HttpFoundation\Response;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\RateLimiter;
