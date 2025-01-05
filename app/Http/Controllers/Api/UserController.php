@@ -33,8 +33,14 @@ class UserController
          */
         $authUser = Auth::user();
 
+        $userQueyFilters = new UserQueryFilters(
+            $request->role ?? RoleEnum::CUSTOMER->value,
+            $request->search,
+            $authUser->hasRole(RoleEnum::ADMIN->value) ? [$authUser->id] : []
+        );
+
         $users = User::query()
-            ->tap(new UserQueryFilters($request->role ?? RoleEnum::CUSTOMER->value, $request->search, $authUser->hasRole(RoleEnum::ADMIN->value) ? [$authUser->id] : []))
+            ->tap($userQueyFilters)
             ->with('roles')
             ->orderBy($request->sortBy ?? 'created_at', $request->order ?? 'desc')
             ->paginate($request->perPage);
