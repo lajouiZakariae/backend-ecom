@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\RoleEnum;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class UserStoreRequest extends FormRequest
@@ -37,9 +41,16 @@ class UserStoreRequest extends FormRequest
 
             'email' => [
                 'required',
+                Rule::unique(User::class),
                 'string',
                 'email',
                 'max:255',
+            ],
+
+            'role' => [
+                'required',
+                'string',
+                Rule::in([RoleEnum::CUSTOMER->value]),
             ],
 
             'phone_number' => [

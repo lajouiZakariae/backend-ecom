@@ -7,11 +7,11 @@ use App\Filters\UserQueryFilters;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -75,7 +75,7 @@ class UserController
                 throw new BadRequestHttpException(__(':resource could not be created', ['resource' => __('User')]));
             }
 
-            $user->assignRole(RoleEnum::CUSTOMER);
+            $user->assignRole($userValidatedData['role']);
 
             return $user;
         });
@@ -87,7 +87,12 @@ class UserController
     {
         $userValidatedData = $request->validated();
 
-        $affectedRowsCount = User::role(RoleEnum::CUSTOMER)
+        /**
+         * @var User $authUser
+         */
+        $authUser = Auth::user();
+
+        $affectedRowsCount = User::whereNot('id', $authUser->id)
             ->where('id', $userId)
             ->update($userValidatedData);
 
@@ -100,7 +105,12 @@ class UserController
 
     public function destroy(int $userId): Response
     {
-        $affectedRowsCount = User::destroy($userId);
+        /**
+         * @var User $authUser
+         */
+        $authUser = Auth::user();
+
+        $affectedRowsCount = User::whereNot('id', $authUser->id)->destroy($userId);
 
         if ($affectedRowsCount === 0) {
             throw new NotFoundHttpException(__(':resource not found', ['resource' => __('User')]));
@@ -116,9 +126,14 @@ class UserController
             'ids.*' => ['integer', 'exists:users,id'],
         ]);
 
-        $affectedRowsCount = User::role(RoleEnum::CUSTOMER)
-            ->whereIn('id', $request->ids)
-            ->delete();
+        /**
+         * @var User $authUser
+         */
+        $authUser = Auth::user();
+
+        $usersIdsToDestroy = collect($request->ids)->filter(fn(int $id): bool => $id !== $authUser->id);
+
+        $affectedRowsCount = User::role(RoleEnum::CUSTOMER)->whereIn('id', $usersIdsToDestroy)->delete();
 
         if ($affectedRowsCount === 0) {
             throw new NotFoundHttpException(__(':resource not found', ['resource' => __('User')]));
@@ -129,7 +144,7 @@ class UserController
 
     public function authenticatedUser(): UserResource
     {
-        return new UserResource(Auth::user());
+        return new UserResource(Auth::user()->load('roles'));
     }
 
     public function updateAuthenticatedUser(Request $request): UserResource
@@ -137,7 +152,8 @@ class UserController
         $user = Auth::user();
 
         $user->update($request->validate([
-            'name' => ['string', 'max:255'],
+            'first_name' => ['string', 'max:255'],
+            'last_name' => ['string', 'max:255'],
             'email' => ['string', 'email', 'max:255', "unique:users,email,{$user->id}"],
             'password' => ['string', 'min:8', 'confirmed'],
         ]));
