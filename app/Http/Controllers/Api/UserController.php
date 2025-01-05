@@ -34,9 +34,9 @@ class UserController
         $authUser = Auth::user();
 
         $userQueyFilters = new UserQueryFilters(
-            $request->role ?? RoleEnum::CUSTOMER->value,
+            $request->role,
             $request->search,
-            $authUser->hasRole(RoleEnum::ADMIN->value) ? [$authUser->id] : []
+            $authUser->hasRole(RoleEnum::ADMIN->value) && ($request->role === RoleEnum::ADMIN->value || !$request->role) ? [$authUser->id] : []
         );
 
         $users = User::query()
@@ -50,7 +50,12 @@ class UserController
 
     public function show(int $userId): UserResource
     {
-        $user = User::role(RoleEnum::CUSTOMER)->find($userId);
+        /**
+         * @var User $authUser
+         */
+        $authUser = Auth::user();
+
+        $user = User::whereNot('id', $authUser->id)->find($userId);
 
         if (!$user) {
             throw new NotFoundHttpException(__(':resource not found', ['resource' => __('User')]));
