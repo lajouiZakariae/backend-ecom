@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -22,12 +23,19 @@ class UserController
         $request->validate([
             'search' => ['nullable', 'string', 'max:255'],
             'sortBy' => ['in:id,email,first_name,last_name,created_at'],
+            'role' => ['nullable', Rule::enum(RoleEnum::class)],
             'order' => ['in:asc,desc'],
             'perPage' => ['integer', 'min:1', 'max:100'],
         ]);
 
+        /**
+         * @var User $authUser
+         */
+        $authUser = Auth::user();
+
         $users = User::query()
-            ->tap(new UserQueryFilters(RoleEnum::CUSTOMER, $request->search))
+            ->tap(new UserQueryFilters($request->role ?? RoleEnum::CUSTOMER->value, $request->search, $authUser->hasRole(RoleEnum::ADMIN->value) ? [$authUser->id] : []))
+            ->with('roles')
             ->orderBy($request->sortBy ?? 'created_at', $request->order ?? 'desc')
             ->paginate($request->perPage);
 
