@@ -92,9 +92,11 @@ class UserController
          */
         $authUser = Auth::user();
 
-        $affectedRowsCount = User::whereNot('id', $authUser->id)
-            ->where('id', $userId)
-            ->update($userValidatedData);
+        if ($authUser->id === $userId) {
+            throw new NotFoundHttpException(__(':resource not found', ['resource' => __('User')]));
+        }
+
+        $affectedRowsCount = User::where('id', $userId)->update($userValidatedData);
 
         if ($affectedRowsCount === 0) {
             throw new NotFoundHttpException(__(':resource not found', ['resource' => __('User')]));
@@ -110,7 +112,11 @@ class UserController
          */
         $authUser = Auth::user();
 
-        $affectedRowsCount = User::whereNot('id', $authUser->id)->destroy($userId);
+        if ($authUser->id === $userId) {
+            throw new NotFoundHttpException(__(':resource not found', ['resource' => __('User')]));
+        }
+
+        $affectedRowsCount = User::where('id', $userId)->delete();
 
         if ($affectedRowsCount === 0) {
             throw new NotFoundHttpException(__(':resource not found', ['resource' => __('User')]));
