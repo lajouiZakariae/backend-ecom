@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\RoleEnum;
+use App\Enums\UserStatusEnum;
 use App\Filters\UserQueryFilters;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Resources\UserResource;
@@ -22,7 +23,7 @@ class UserController
     {
         $request->validate([
             'search' => ['nullable', 'string', 'max:255'],
-            'sortBy' => ['in:id,email,first_name,last_name,created_at'],
+            'sortBy' => ['in:id,email,first_name,last_name,created_at,status'],
             'role' => ['nullable', Rule::enum(RoleEnum::class)],
             'order' => ['in:asc,desc'],
             'perPage' => ['integer', 'min:1', 'max:100'],
@@ -70,6 +71,10 @@ class UserController
 
         $user = DB::transaction(function () use ($userValidatedData): User {
             $user = new User($userValidatedData);
+
+            if ($userValidatedData['role'] === RoleEnum::CUSTOMER->value) {
+                $user->status = UserStatusEnum::ACTIVE;
+            }
 
             if (!$user->save()) {
                 throw new BadRequestHttpException(__(':resource could not be created', ['resource' => __('User')]));

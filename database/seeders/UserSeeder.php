@@ -18,6 +18,7 @@ class UserSeeder extends Seeder
             'first_name' => 'Customer',
             'last_name' => 'One',
             'email' => 'customer@one.com',
+            'status' => 'active',
         ]);
 
         $user->assignRole(RoleEnum::CUSTOMER);
@@ -26,6 +27,7 @@ class UserSeeder extends Seeder
             'first_name' => 'Admin',
             'last_name' => 'One',
             'email' => 'admin@one.com',
+            'status' => null,
         ]);
 
         $admin->assignRole(RoleEnum::ADMIN);

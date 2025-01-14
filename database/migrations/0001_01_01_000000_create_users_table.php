@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserStatusEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,6 +21,7 @@ return new class extends Migration {
             $table->string('stripe_id')->nullable();
             $table->string('google_id')->nullable();
             $table->string('password');
+            $table->enum('status', UserStatusEnum::values())->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
