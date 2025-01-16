@@ -6,6 +6,7 @@ use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
 use App\Filters\UserQueryFilters;
 use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -88,7 +89,7 @@ class UserController
         return new UserResource($user);
     }
 
-    public function update(UserStoreRequest $request, int $userId): UserResource
+    public function update(UserUpdateRequest $request, int $userId): UserResource
     {
         $userValidatedData = $request->validated();
 
@@ -99,6 +100,10 @@ class UserController
 
         if ($authUser->id === $userId) {
             throw new NotFoundHttpException(__(':resource not found', ['resource' => __('User')]));
+        }
+
+        if (!$request->password) {
+            unset($userValidatedData['password']);
         }
 
         $affectedRowsCount = User::where('id', $userId)->update($userValidatedData);
