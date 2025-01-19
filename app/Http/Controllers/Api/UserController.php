@@ -24,6 +24,7 @@ class UserController
     {
         $request->validate([
             'search' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', Rule::enum(UserStatusEnum::class)],
             'sortBy' => ['in:id,email,first_name,last_name,created_at,status'],
             'role' => ['nullable', Rule::enum(RoleEnum::class)],
             'order' => ['in:asc,desc'],
@@ -38,6 +39,7 @@ class UserController
         $userQueyFilters = new UserQueryFilters(
             $request->role,
             $request->search,
+            $request->status,
             $authUser->hasRole(RoleEnum::ADMIN->value) && ($request->role === RoleEnum::ADMIN->value || !$request->role) ? [$authUser->id] : []
         );
 

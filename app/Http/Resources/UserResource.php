@@ -17,9 +17,7 @@ class UserResource extends JsonResource
     {
         return [
             ...parent::toArray($request),
-            'first_role' => new RoleResource(
-                $this->whenLoaded('firstRole', fn(): Role => $this->firstRole->first())
-            ),
+            'roles' => RoleResource::collection($this->whenLoaded('roles')),
         ];
     }
 }
