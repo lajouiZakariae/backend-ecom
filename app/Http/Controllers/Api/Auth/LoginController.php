@@ -52,7 +52,7 @@ class LoginController
 
         $token = $user->createToken('api_token')->plainTextToken;
 
-        return UserResource::make($user->load(['firstRole']))
+        return UserResource::make($user->load(['roles']))
             ->additional(['meta' => ['token' => $token]])
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
