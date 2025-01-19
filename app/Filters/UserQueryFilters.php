@@ -9,6 +9,7 @@ class UserQueryFilters
     public function __construct(
         private ?string $roleName = null,
         private ?string $search = null,
+        private ?string $status = null,
         private ?array $exludeIds = null,
     ) {
     }
@@ -30,10 +31,12 @@ class UserQueryFilters
             );
         }
 
+        if ($this->status) {
+            $usersQuery->where("status", $this->status);
+        }
+
         if ($this->exludeIds !== null && count($this->exludeIds) > 0) {
             $usersQuery->whereNotIn('id', $this->exludeIds);
         }
     }
-
-
 }
