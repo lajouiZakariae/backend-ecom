@@ -32,8 +32,9 @@ class CategoryController
         ]);
 
         $paginatedCategories = Category::query()
-            ->tap(new CategoryFilters($request->sortBy, $request->order))
+            ->tap(new CategoryFilters($request->search))
             ->with('image')
+            ->orderBy($request->sortBy ?? 'created_at', $request->order ?? 'desc')
             ->paginate($request->perPage ?? 10);
 
         return CategoryResource::collection($paginatedCategories);

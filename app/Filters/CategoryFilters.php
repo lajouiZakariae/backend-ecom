@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Builder;
 class CategoryFilters
 {
     public function __construct(
-        private string $sortBy,
-        private string $order
+        private ?string $search,
     ) {
     }
 
     public function __invoke(Builder $query): void
     {
-        $query->orderBy($this->sortBy, $this->order);
+        if ($this->search) {
+            $query->where('name', 'like', "%{$this->search}%");
+        }
     }
 }
