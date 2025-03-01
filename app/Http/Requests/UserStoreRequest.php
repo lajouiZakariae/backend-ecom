@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use App\Enums\RoleEnum;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
@@ -50,7 +49,7 @@ class UserStoreRequest extends FormRequest
             'role' => [
                 'required',
                 'string',
-                Rule::in([RoleEnum::CUSTOMER->value]),
+                Rule::enum(RoleEnum::class),
             ],
 
             'phone_number' => [
