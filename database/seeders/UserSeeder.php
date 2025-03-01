@@ -37,5 +37,11 @@ class UserSeeder extends Seeder
         $customers->each(function (User $customer): void {
             $customer->assignRole(RoleEnum::CUSTOMER);
         });
+
+        $admins = User::factory()->count(25)->create();
+
+        $admins->each(function (User $admin): void {
+            $admin->assignRole(RoleEnum::ADMIN);
+        });
     }
 }
