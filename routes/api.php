@@ -21,7 +21,6 @@ Route::prefix('v1')->group(function (): void {
 
     Route::post('register', [RegisterController::class, 'store']);
 
-
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('logout', [LogoutController::class, 'destroy']);
 
