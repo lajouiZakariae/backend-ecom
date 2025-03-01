@@ -23,12 +23,12 @@ class UserController
     public function index(Request $request): ResourceCollection
     {
         $request->validate([
-            'search' => ['nullable', 'string', 'max:255'],
-            'status' => ['nullable', Rule::enum(UserStatusEnum::class)],
             'sortBy' => ['in:id,email,first_name,last_name,created_at,status'],
-            'role' => ['nullable', Rule::enum(RoleEnum::class)],
             'order' => ['in:asc,desc'],
             'perPage' => ['integer', 'min:1', 'max:100'],
+            'role' => ['nullable', Rule::enum(RoleEnum::class)],
+            'search' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', Rule::enum(UserStatusEnum::class)],
         ]);
 
         /**
@@ -40,7 +40,7 @@ class UserController
             $request->role,
             $request->search,
             $request->status,
-            $authUser->hasRole(RoleEnum::ADMIN->value) && ($request->role === RoleEnum::ADMIN->value || !$request->role) ? [$authUser->id] : []
+            $authUser->hasRole(RoleEnum::ADMIN) && ($request->role === RoleEnum::ADMIN->value || !$request->role) ? [$authUser->id] : []
         );
 
         $users = User::query()
