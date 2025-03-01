@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\RoleEnum;
 use App\Filters\ProductQueryFilters;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use DB;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -27,22 +29,30 @@ class ProductController
             'perPage' => ['integer', 'min:1', 'max:100'],
         ]);
 
+        /**
+         * @var \App\Models\User $authUser
+         */
+        $authUser = auth()->user();
+
         $paginatedProducts = Product::query()
             ->select('products.*')
-            ->selectSub(function ($query): void {
-                $query->from('cart_items')
-                    ->join('carts', 'cart_items.cart_id', '=', 'carts.id')
-                    ->where('carts.user_id', Auth::id())
-                    ->select(DB::raw('CAST(SUM(cart_items.quantity) AS SIGNED)'))
-                    ->whereColumn('cart_items.product_id', 'products.id')
-                    ->groupBy('cart_items.product_id');
-            }, 'cart_quantity')
-            ->selectSub(function ($query): void {
-                $query->from('product_user')
-                    ->whereColumn('product_id', 'products.id')
-                    ->select(DB::raw('COUNT(product_user.product_id)'))
-                    ->where('user_id', Auth::id());
-            }, 'wishlisted_by_authenticated_user')
+            ->when($authUser->hasRole(RoleEnum::CUSTOMER), function (Builder $query) {
+                $query
+                    ->selectSub(function ($query): void {
+                        $query->from('cart_items')
+                            ->join('carts', 'cart_items.cart_id', '=', 'carts.id')
+                            ->where('carts.user_id', Auth::id())
+                            ->select(DB::raw('CAST(SUM(cart_items.quantity) AS SIGNED)'))
+                            ->whereColumn('cart_items.product_id', 'products.id')
+                            ->groupBy('cart_items.product_id');
+                    }, 'cart_quantity')
+                    ->selectSub(function ($query): void {
+                        $query->from('product_user')
+                            ->whereColumn('product_id', 'products.id')
+                            ->select(DB::raw('COUNT(product_user.product_id)'))
+                            ->where('user_id', Auth::id());
+                    }, 'wishlisted_by_authenticated_user');
+            })
             ->tap(new ProductQueryFilters(
                 $request->priceFrom,
                 $request->priceTo,
